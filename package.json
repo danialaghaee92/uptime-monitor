@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node scripts/start-all.js",
     "worker": "node src/worker.js",
     "start:web": "node scripts/migrate.js && node src/server.js",
     "start:worker": "node scripts/migrate.js && node src/worker.js",

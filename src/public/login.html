@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>ورود | دیده‌بان</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body class="auth-page">
+  <div class="auth-glow" aria-hidden="true"></div>
+  <main class="auth-card">
+    <div class="brand brand-lg">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="34" height="34" fill="none">
+          <path d="M16 3 6 7v8c0 6.4 4.2 11 10 13 5.8-2 10-6.6 10-13V7L16 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M10 16h3l2-5 2.5 10 2-5H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <strong>دیده‌بان</strong>
+        <small>پایش دامنه و گواهی SSL</small>
+      </span>
+    </div>
+
+    <h1>ورود به سامانه</h1>
+    <p class="muted auth-sub">برای مشاهده وضعیت سایت‌ها و گواهی‌های SSL وارد شوید.</p>
+
+    <form id="login-form" novalidate autocomplete="on">
+      <label class="field">
+        <span>نام کاربری</span>
+        <input id="username" name="username" type="text" autocomplete="username" required autofocus spellcheck="false">
+      </label>
+
+      <label class="field">
+        <span>رمز عبور</span>
+        <span class="password-wrap">
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <button type="button" id="toggle-password" class="icon-btn" aria-label="نمایش رمز عبور" title="نمایش رمز عبور">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7">
+              <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.6"/>
+            </svg>
+          </button>
+        </span>
+      </label>
+
+      <div id="login-error" class="alert alert-error" hidden role="alert"></div>
+
+      <button id="login-submit" class="btn btn-primary btn-block" type="submit">ورود</button>
+    </form>
+
+    <p class="auth-note">دسترسی فقط برای کاربران تعریف‌شده توسط ادمین امکان‌پذیر است.</p>
+    <noscript><p class="alert alert-error">برای استفاده از سامانه، جاوااسکریپت مرورگر باید فعال باشد.</p></noscript>
+  </main>
+
+  <script type="module" src="/assets/js/login.js"></script>
+</body>
+</html>

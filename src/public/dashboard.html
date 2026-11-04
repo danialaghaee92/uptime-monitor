@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>وضعیت سایت‌ها | دیده‌بان</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body data-page="uptime">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30" fill="none">
+            <path d="M16 3 6 7v8c0 6.4 4.2 11 10 13 5.8-2 10-6.6 10-13V7L16 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M10 16h3l2-5 2.5 10 2-5H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-text"><strong>دیده‌بان</strong><small>پایش دامنه و SSL</small></span>
+      </a>
+      <nav class="nav" aria-label="ناوبری اصلی">
+        <a href="/dashboard" data-nav="uptime">وضعیت سایت‌ها</a>
+        <a href="/ssl" data-nav="ssl">وضعیت SSL</a>
+        <a href="/admin" data-nav="admin" data-admin-only hidden>مدیریت</a>
+      </nav>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost btn-sm" id="date-toggle" type="button">نمایش میلادی</button>
+        <span class="user-chip" title="کاربر جاری">
+          <span class="avatar" aria-hidden="true">●</span>
+          <span><span data-user-name>—</span><span class="role" data-user-role></span></span>
+        </span>
+        <button class="btn btn-ghost btn-sm" id="logout-btn" type="button">خروج</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container page">
+    <div class="page-head">
+      <div>
+        <h1>وضعیت سایت‌ها</h1>
+        <p class="muted">پایش لحظه‌ای در دسترس بودن دامنه‌ها و زمان پاسخ</p>
+      </div>
+      <div class="updated-box">آخرین به‌روزرسانی: <span data-last-updated>—</span></div>
+    </div>
+
+    <section class="summary-grid" id="summary" aria-label="خلاصه وضعیت"></section>
+
+    <section class="panel">
+      <div class="toolbar">
+        <label class="search-box">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+          <input id="search" type="search" placeholder="جستجوی نام، دامنه، دسته یا برچسب..." autocomplete="off">
+        </label>
+        <select id="filter-status" aria-label="فیلتر وضعیت">
+          <option value="">همه وضعیت‌ها</option>
+          <option value="up">Up</option>
+          <option value="degraded">Degraded</option>
+          <option value="down">Down</option>
+          <option value="unknown">نامشخص</option>
+        </select>
+        <select id="filter-category" aria-label="فیلتر دسته">
+          <option value="">همه دسته‌ها</option>
+        </select>
+        <label class="switch">
+          <input type="checkbox" data-auto-refresh>
+          <span>به‌روزرسانی خودکار</span>
+        </label>
+        <button class="btn btn-ghost btn-sm" id="refresh-btn" type="button">به‌روزرسانی</button>
+      </div>
+
+      <div id="error-banner" class="alert alert-error" hidden role="alert"></div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="uptime-table">
+          <thead>
+            <tr>
+              <th><button class="sort-btn" data-sort="displayName" type="button">نام / دامنه</button></th>
+              <th>دسته</th>
+              <th><button class="sort-btn" data-sort="status" type="button">وضعیت</button></th>
+              <th><button class="sort-btn" data-sort="statusCode" type="button">کد HTTP</button></th>
+              <th><button class="sort-btn" data-sort="responseMs" type="button">زمان پاسخ</button></th>
+              <th>Uptime ۲۴ ساعت</th>
+              <th>Uptime ۷ روز</th>
+              <th>Uptime ۳۰ روز</th>
+              <th><button class="sort-btn" data-sort="lastCheckedAt" type="button">آخرین بررسی</button></th>
+              <th>نمودار</th>
+            </tr>
+          </thead>
+          <tbody id="uptime-body">
+            <tr><td colspan="10" class="loading">در حال بارگذاری...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="empty-state" class="empty-state" hidden></div>
+    </section>
+  </main>
+
+  <script type="module" src="/assets/js/dashboard.js"></script>
+</body>
+</html>

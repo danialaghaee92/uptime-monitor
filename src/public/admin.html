@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>مدیریت | دیده‌بان</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body data-page="admin">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30" fill="none">
+            <path d="M16 3 6 7v8c0 6.4 4.2 11 10 13 5.8-2 10-6.6 10-13V7L16 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M10 16h3l2-5 2.5 10 2-5H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-text"><strong>دیده‌بان</strong><small>پایش دامنه و SSL</small></span>
+      </a>
+      <nav class="nav" aria-label="ناوبری اصلی">
+        <a href="/dashboard" data-nav="uptime">وضعیت سایت‌ها</a>
+        <a href="/ssl" data-nav="ssl">وضعیت SSL</a>
+        <a href="/admin" data-nav="admin" data-admin-only hidden>مدیریت</a>
+      </nav>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost btn-sm" id="date-toggle" type="button">نمایش میلادی</button>
+        <span class="user-chip" title="کاربر جاری">
+          <span class="avatar" aria-hidden="true">●</span>
+          <span><span data-user-name>—</span><span class="role" data-user-role></span></span>
+        </span>
+        <button class="btn btn-ghost btn-sm" id="logout-btn" type="button">خروج</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container page">
+    <div class="page-head">
+      <div>
+        <h1>مدیریت سامانه</h1>
+        <p class="muted">دامنه‌ها، کاربران و تنظیمات پایش</p>
+      </div>
+      <div class="updated-box">آخرین به‌روزرسانی: <span data-last-updated>—</span></div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="بخش‌های مدیریت">
+      <button class="tab active" id="tab-btn-targets" data-tab="targets" type="button" role="tab" aria-selected="true">دامنه‌ها</button>
+      <button class="tab" id="tab-btn-users" data-tab="users" type="button" role="tab" aria-selected="false">کاربران</button>
+      <button class="tab" id="tab-btn-settings" data-tab="settings" type="button" role="tab" aria-selected="false">تنظیمات</button>
+    </div>
+
+    <section id="tab-targets" class="tab-panel panel">
+      <div class="toolbar">
+        <label class="search-box">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+          <input id="target-search" type="search" placeholder="جستجو در دامنه‌ها..." autocomplete="off">
+        </label>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-ghost btn-sm" id="bulk-open" type="button">افزودن گروهی</button>
+        <button class="btn btn-primary btn-sm" id="target-add" type="button">افزودن دامنه</button>
+      </div>
+      <div id="targets-error" class="alert alert-error" hidden role="alert"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="targets-table">
+          <thead>
+            <tr>
+              <th>نام / دامنه</th>
+              <th>دسته</th>
+              <th>پایش سایت</th>
+              <th>پایش SSL</th>
+              <th>وضعیت فعلی</th>
+              <th>آخرین بررسی</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody id="targets-body"><tr><td colspan="7" class="loading">در حال بارگذاری...</td></tr></tbody>
+        </table>
+      </div>
+      <div id="targets-empty" class="empty-state" hidden></div>
+    </section>
+
+    <section id="tab-users" class="tab-panel panel" hidden>
+      <div class="toolbar">
+        <div class="toolbar-title">کاربران سامانه</div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-primary btn-sm" id="user-add" type="button">افزودن کاربر</button>
+      </div>
+      <div id="users-error" class="alert alert-error" hidden role="alert"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="users-table">
+          <thead>
+            <tr>
+              <th>نام کاربری</th>
+              <th>نقش</th>
+              <th>وضعیت</th>
+              <th>آخرین ورود</th>
+              <th>تاریخ ساخت</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody id="users-body"><tr><td colspan="6" class="loading">در حال بارگذاری...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-settings" class="tab-panel" hidden>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>تنظیمات پایش</h2>
+          <p class="muted">تغییر بازه SSL سراسری بلافاصله روی دامنه‌هایی که بازه اختصاصی ندارند اعمال می‌شود.</p>
+        </div>
+        <form id="settings-form" class="form-grid">
+          <label class="field">
+            <span>بازه بررسی SSL سراسری (ثانیه)</span>
+            <input name="globalSslIntervalSeconds" type="number" min="60" max="604800" required>
+            <small>پیش‌فرض ۳۰۰ ثانیه (۵ دقیقه)</small>
+          </label>
+          <label class="field">
+            <span>بازه پیش‌فرض پایش سایت (ثانیه)</span>
+            <input name="defaultUptimeIntervalSeconds" type="number" min="10" max="86400" required>
+            <small>برای دامنه‌های جدید</small>
+          </label>
+          <label class="field">
+            <span>Timeout پیش‌فرض (ثانیه)</span>
+            <input name="defaultTimeoutSeconds" type="number" min="1" max="120" required>
+          </label>
+          <label class="field">
+            <span>آستانه شکست متوالی</span>
+            <input name="defaultFailureThreshold" type="number" min="1" max="20" required>
+            <small>پس از این تعداد شکست، وضعیت Down می‌شود.</small>
+          </label>
+          <label class="field">
+            <span>آستانه کندی (میلی‌ثانیه)</span>
+            <input name="defaultDegradedThresholdMs" type="number" min="100" max="600000" required>
+          </label>
+          <label class="field">
+            <span>کدهای وضعیت قابل قبول پیش‌فرض</span>
+            <input name="defaultAcceptedStatusCodes" type="text" maxlength="200" required>
+            <small>مثال: 200-399 یا 200,301,401-403</small>
+          </label>
+          <label class="field">
+            <span>نگهداری تاریخچه (روز)</span>
+            <input name="historyRetentionDays" type="number" min="0" max="3650" required>
+            <small>صفر یعنی بدون پاک‌سازی خودکار.</small>
+          </label>
+          <label class="switch switch-box">
+            <input name="allowPrivateTargets" type="checkbox">
+            <span>اجازه پیش‌فرض برای دامنه‌های شبکه خصوصی (SSRF)</span>
+          </label>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="settings-save" type="submit">ذخیره تنظیمات</button>
+            <span id="settings-status" class="muted"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>کانال‌های هشدار</h2>
+          <p class="muted">توکن‌ها و رمزها فقط از متغیرهای محیطی خوانده می‌شوند و در سامانه ذخیره نمی‌شوند.</p>
+        </div>
+        <div id="channels-status" class="channels">در حال بارگذاری...</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>تغییر رمز عبور من</h2>
+          <p class="muted">پس از تغییر، سایر نشست‌های شما بسته می‌شود.</p>
+        </div>
+        <form id="password-form" class="form-grid">
+          <label class="field">
+            <span>رمز عبور فعلی</span>
+            <input name="currentPassword" type="password" autocomplete="current-password" required>
+          </label>
+          <label class="field">
+            <span>رمز عبور جدید</span>
+            <input name="newPassword" type="password" autocomplete="new-password" required>
+            <small>حداقل ۱۰ کاراکتر شامل حرف و رقم</small>
+          </label>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">تغییر رمز</button>
+            <span id="password-status" class="muted"></span>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- مودال دامنه -->
+  <div class="modal" id="target-modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="target-modal-title">
+      <div class="modal-head">
+        <h2 id="target-modal-title">افزودن دامنه</h2>
+        <button class="icon-btn" type="button" data-close-modal aria-label="بستن">✕</button>
+      </div>
+      <form id="target-form">
+        <input type="hidden" name="id">
+        <div class="modal-body">
+          <div class="form-grid">
+            <label class="field span-2">
+              <span>آدرس دامنه *</span>
+              <input name="url" type="text" inputmode="url" placeholder="example.com یا https://example.com/path" required spellcheck="false">
+              <small>اگر scheme ننویسید، https:// اضافه می‌شود.</small>
+            </label>
+            <label class="field">
+              <span>نام نمایشی</span>
+              <input name="displayName" type="text" maxlength="120" placeholder="مثلاً سایت اصلی بانک">
+            </label>
+            <label class="field">
+              <span>دسته</span>
+              <input name="category" type="text" maxlength="80" placeholder="مثلاً بانک‌ها">
+            </label>
+            <label class="field span-2">
+              <span>برچسب‌ها</span>
+              <input name="tags" type="text" maxlength="400" placeholder="با کاما جدا کنید: پرداخت، عمومی">
+            </label>
+
+            <label class="field">
+              <span>بازه پایش سایت (ثانیه)</span>
+              <input name="uptimeIntervalSeconds" type="number" min="10" max="86400">
+            </label>
+            <label class="field">
+              <span>Timeout (ثانیه)</span>
+              <input name="timeoutSeconds" type="number" min="1" max="120">
+            </label>
+            <label class="field">
+              <span>آستانه کندی (میلی‌ثانیه)</span>
+              <input name="degradedThresholdMs" type="number" min="100" max="600000">
+            </label>
+            <label class="field">
+              <span>تعداد شکست متوالی</span>
+              <input name="failureThreshold" type="number" min="1" max="20">
+            </label>
+            <label class="field">
+              <span>کدهای وضعیت قابل قبول</span>
+              <input name="acceptedStatusCodes" type="text" maxlength="200">
+            </label>
+            <label class="field">
+              <span>بازه پایش SSL (ثانیه)</span>
+              <input name="sslIntervalSeconds" type="number" min="60" max="604800" placeholder="خالی = مقدار سراسری">
+            </label>
+          </div>
+
+          <div class="checks">
+            <label class="switch"><input name="uptimeEnabled" type="checkbox" checked><span>پایش در دسترس بودن سایت</span></label>
+            <label class="switch"><input name="sslEnabled" type="checkbox" checked><span>پایش گواهی SSL</span></label>
+            <label class="switch"><input name="isActive" type="checkbox" checked><span>فعال</span></label>
+            <label class="switch"><input name="allowPrivate" type="checkbox"><span>اجازه آدرس خصوصی/داخلی (SSRF)</span></label>
+          </div>
+          <p class="hint">فقط در صورت نیاز واقعی به پایش سرویس داخلی، گزینه آدرس خصوصی را فعال کنید.</p>
+          <div id="target-form-error" class="alert alert-error" hidden role="alert"></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" type="button" data-close-modal>انصراف</button>
+          <button class="btn btn-primary" id="target-save" type="submit">ذخیره</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- مودال افزودن گروهی -->
+  <div class="modal" id="bulk-modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bulk-modal-title">
+      <div class="modal-head">
+        <h2 id="bulk-modal-title">افزودن گروهی دامنه‌ها</h2>
+        <button class="icon-btn" type="button" data-close-modal aria-label="بستن">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <label class="field span-2">
+            <span>لیست دامنه‌ها</span>
+            <textarea name="bulkText" id="bulk-text" rows="8" placeholder="example.com&#10;https://bank.ir | نام نمایشی | بانک‌ها | پرداخت&#10;my-site.ir,نام نمایشی,دسته"></textarea>
+            <small>هر خط یک دامنه. قالب: آدرس | نام | دسته | برچسب‌ها — جداکننده «|» یا «,».</small>
+          </label>
+          <label class="field">
+            <span>دسته پیش‌فرض</span>
+            <input id="bulk-category" type="text" maxlength="80" placeholder="مثلاً بانک‌ها">
+          </label>
+          <label class="field">
+            <span>برچسب‌های پیش‌فرض</span>
+            <input id="bulk-tags" type="text" maxlength="400" placeholder="با کاما جدا کنید">
+          </label>
+          <label class="field span-2">
+            <span>یا فایل CSV</span>
+            <input id="bulk-file" type="file" accept=".csv,text/csv,text/plain">
+            <small>ستون‌های پشتیبانی‌شده: url، name/display_name، category، tags، allow_private</small>
+          </label>
+        </div>
+        <label class="switch"><input id="bulk-private" type="checkbox"><span>اجازه آدرس‌های خصوصی</span></label>
+        <div id="bulk-result" class="bulk-result" hidden></div>
+        <div id="bulk-error" class="alert alert-error" hidden role="alert"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" type="button" data-close-modal>بستن</button>
+        <button class="btn btn-ghost" id="bulk-file-submit" type="button">افزودن از فایل CSV</button>
+        <button class="btn btn-primary" id="bulk-text-submit" type="button">افزودن از متن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال کاربر -->
+  <div class="modal" id="user-modal" hidden>
+    <div class="modal-card modal-sm" role="dialog" aria-modal="true" aria-labelledby="user-modal-title">
+      <div class="modal-head">
+        <h2 id="user-modal-title">افزودن کاربر</h2>
+        <button class="icon-btn" type="button" data-close-modal aria-label="بستن">✕</button>
+      </div>
+      <form id="user-form">
+        <input type="hidden" name="id">
+        <div class="modal-body">
+          <div class="form-grid">
+            <label class="field span-2">
+              <span>نام کاربری *</span>
+              <input name="username" type="text" maxlength="50" required spellcheck="false" autocomplete="off">
+            </label>
+            <label class="field span-2">
+              <span>رمز عبور <span id="password-optional" class="muted"></span></span>
+              <input name="password" type="password" autocomplete="new-password">
+              <small>حداقل ۱۰ کاراکتر شامل حرف و رقم</small>
+            </label>
+            <label class="field">
+              <span>نقش</span>
+              <select name="role">
+                <option value="viewer">بیننده (فقط خواندنی)</option>
+                <option value="admin">ادمین</option>
+              </select>
+            </label>
+            <label class="switch switch-box">
+              <input name="isActive" type="checkbox" checked>
+              <span>حساب فعال باشد</span>
+            </label>
+          </div>
+          <div id="user-form-error" class="alert alert-error" hidden role="alert"></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" type="button" data-close-modal>انصراف</button>
+          <button class="btn btn-primary" id="user-save" type="submit">ذخیره</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/assets/js/admin.js"></script>
+</body>
+</html>

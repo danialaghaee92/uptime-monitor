@@ -424,14 +424,21 @@ export function markUpdated() {
   if (el) el.textContent = fmtDate(new Date());
 }
 
-export function summaryCard(label, value, css = '', icon = '') {
-  return `<div class="stat-card ${css}">
-    <div class="stat-icon" aria-hidden="true">${icon}</div>
-    <div class="stat-body">
-      <div class="stat-value">${fmtNumber(value)}</div>
-      <div class="stat-label">${esc(label)}</div>
-    </div>
-  </div>`;
+export function summaryCard(label, value, css = '', icon = '', options = {}) {
+  const { filter = null, active = false } = options;
+  const body = `
+    <span class="stat-icon" aria-hidden="true">${icon}</span>
+    <span class="stat-body">
+      <span class="stat-value">${fmtNumber(value)}</span>
+      <span class="stat-label">${esc(label)}</span>
+    </span>`;
+
+  // کارت‌های خلاصه در داشبورد به‌عنوان دکمه فیلتر عمل می‌کنند.
+  if (filter !== null) {
+    return `<button type="button" class="stat-card ${css}${active ? ' is-active' : ''}" data-filter="${esc(filter)}" aria-pressed="${active}">${body}</button>`;
+  }
+
+  return `<div class="stat-card ${css}">${body}</div>`;
 }
 
 export const icons = {

@@ -42,11 +42,11 @@ const STATUS_ORDER = { invalid: 0, expiring: 1, unknown: 2, ok: 3 };
 function renderSummary() {
   const s = state.data?.summary || { total: 0, ok: 0, expiring: 0, invalid: 0, unknown: 0 };
   els.summary.innerHTML = [
-    summaryCard('کل گواهی‌ها', s.total, 'info', icons.globe),
-    summaryCard('سالم', s.ok, 'ok', icons.check),
-    summaryCard('در خطر', s.expiring, 'warn', icons.clock),
-    summaryCard('خراب', s.invalid, 'bad', icons.alert),
-    summaryCard('بدون بررسی', s.unknown, 'muted', icons.shield),
+    summaryCard('کل گواهی‌ها', s.total, 'info', icons.globe, { filter: '', active: !state.status }),
+    summaryCard('سالم', s.ok, 'ok', icons.check, { filter: 'ok', active: state.status === 'ok' }),
+    summaryCard('در خطر', s.expiring, 'warn', icons.clock, { filter: 'expiring', active: state.status === 'expiring' }),
+    summaryCard('خراب', s.invalid, 'bad', icons.alert, { filter: 'invalid', active: state.status === 'invalid' }),
+    summaryCard('بدون بررسی', s.unknown, 'muted', icons.shield, { filter: 'unknown', active: state.status === 'unknown' }),
   ].join('');
 }
 
@@ -162,10 +162,20 @@ els.search.addEventListener('input', debounce(() => {
 }, 120));
 els.status.addEventListener('change', () => {
   state.status = els.status.value;
+  renderSummary();
   render();
 });
 els.category.addEventListener('change', () => {
   state.category = els.category.value;
+  render();
+});
+els.summary.addEventListener('click', (event) => {
+  const card = event.target.closest('[data-filter]');
+  if (!card) return;
+  const value = card.dataset.filter;
+  state.status = state.status === value ? '' : value;
+  els.status.value = state.status;
+  renderSummary();
   render();
 });
 els.table.querySelectorAll('[data-sort]').forEach((button) => {

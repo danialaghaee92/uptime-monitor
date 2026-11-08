@@ -16,7 +16,7 @@ import {
   summaryCard,
   updateSortHeaders,
   icons,
-} from './common.js';
+} from './common.js?v=2';
 
 const state = {
   data: null,
